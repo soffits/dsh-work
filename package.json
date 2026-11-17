@@ -1,6 +1,6 @@
 {
   "name": "@soffits/dsh-work",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A work page for DeepSeek Harness: the issues of a work board as columns, and each issue as a group chat of its comments and the DSH sessions working on it, where people and agents talk and @mention each other.",
   "type": "module",
   "license": "MIT",

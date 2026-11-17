@@ -34,6 +34,7 @@ window.__ModuleLoader__.load({
     const CSS = `
 .wk-page{display:flex;flex-direction:column;width:100%;height:100%;min-width:0;min-height:0;overflow:hidden;color:var(--dsw-alias-label-primary);background:var(--dsw-alias-bg-base);font-size:14px;line-height:1.6;line-break:strict;overflow-wrap:anywhere}
 .wk-page :focus-visible{outline:2px solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:2px}
+.wk-page .uk-composerInput:focus-visible{outline:none}
 .wk-head{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:28px clamp(16px,3vw,40px) 12px}
 [data-platform=darwin] .wk-head{padding-top:calc(28px + var(--dsh-frame-top-clearance,0px))}
 .wk-head h1{margin:0;font-size:20px;line-height:28px;font-weight:500}

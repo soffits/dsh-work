@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.6
+
+The message box shows focus with its own border only, without a second ring inside it.
+
 ## 0.1.5
 
 The assistant is counted once among a message's recipients when its main session is also the one working on the issue.
