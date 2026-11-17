@@ -1,0 +1,9 @@
+# Bundle layer for @soffits/dsh-work: one Host row serving the work page. Point command (and cwd)
+# at your board, and for a DSH several people sign in to, set people / peopleFile and access in a
+# profile override of this row.
+- insert:
+    - id: work
+      name: '@soffits/dsh-work'
+      config:
+        command: [companion, board]
+    assistant: assistant
