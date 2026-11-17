@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+Session titles and last answers are read from DSH each time instead of kept for a while, so a chat never shows an old one.
+
 ## 0.1.2
 
 A closed issue says how it ended once, under the chat in up to three lines, instead of also filling the pinned facts on a phone; "nobody yet" shows only when no session is working on it.

@@ -6,8 +6,6 @@
  */
 
 const LINE_MAX = 280
-const FINAL_TTL_MS = 10 * 60 * 1000
-const TITLE_TTL_MS = 60 * 1000
 
 /** The first meaningful line of an assistant message's text parts. */
 export function firstLine(message) {
@@ -37,9 +35,7 @@ export function finalOf(events) {
  * @param {() => any} services - `{ sessionQuery, agents }` as DSH has them right now (either may be undefined)
  */
 export function createSessions(services) {
-  const titles = new Map()   // id -> { at, title, header }
-  const finals = new Map()   // id -> { at, value }
-
+  // Nothing is cached: titles and last answers are read from DSH each time, so the page never shows an old one.
   /** The full DSH id for a board reference (full id, or its short form), among ids DSH knows. */
   function resolve(ref, known) {
     const short = String(ref).replace(/^session-/, '').toLowerCase()
@@ -53,15 +49,12 @@ export function createSessions(services) {
   }
 
   async function header(id) {
-    const cached = titles.get(id)
-    if (cached && Date.now() - cached.at < TITLE_TTL_MS) return cached
     const query = services().sessionQuery
-    let value = { at: Date.now(), title: null, createdAt: null, parent: null }
+    let value = { title: null, createdAt: null, parent: null }
     try {
       const snapshot = await query?.readTitleSnapshot?.(id)
       const head = snapshot?.session ?? snapshot?.header
       value = {
-        at: Date.now(),
         title: snapshot?.title?.title ?? snapshot?.title?.text ?? (typeof snapshot?.title === 'string' ? snapshot.title : null),
         createdAt: Number.isFinite(head?.createdAt) ? new Date(head.createdAt).toISOString() : null,
         parent: head?.parentSession ?? null,
@@ -69,23 +62,16 @@ export function createSessions(services) {
     } catch {
       // Unknown to DSH (another harness wrote it, or it was removed): the board name stays.
     }
-    titles.set(id, value)
     return value
   }
 
   async function final(id, now) {
     if (now === 'running') return null
-    const cached = finals.get(id)
-    if (cached && Date.now() - cached.at < FINAL_TTL_MS) return cached.value
-    let value = null
     try {
-      const log = await services().sessionQuery?.readSession?.(id)
-      value = finalOf(log?.events)
+      return finalOf((await services().sessionQuery?.readSession?.(id))?.events)
     } catch {
-      value = null
+      return null
     }
-    finals.set(id, { at: Date.now(), value })
-    return value
   }
 
   /**
