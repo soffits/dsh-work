@@ -15,6 +15,12 @@ export function firstLine(message) {
   return line.length > LINE_MAX ? `${line.slice(0, LINE_MAX - 1)}…` : line
 }
 
+/** The session's current title: the text of its latest title event. */
+export function titleOf(events) {
+  const title = events?.findLast?.(event => event?.type === 'session/title')?.data?.title
+  return typeof title === 'string' ? title : (title?.title ?? title?.text ?? null)
+}
+
 /** From a session's raw events: when its last turn ended and the first line of its last answer. */
 export function finalOf(events) {
   let answer = null
@@ -48,35 +54,31 @@ export function createSessions(services) {
     return agent.status === 'running' ? 'running' : 'idle'
   }
 
-  async function header(id) {
-    const query = services().sessionQuery
-    let value = { title: null, createdAt: null, parent: null }
-    try {
-      const snapshot = await query?.readTitleSnapshot?.(id)
-      const head = snapshot?.session ?? snapshot?.header
-      value = {
-        title: snapshot?.title?.title ?? snapshot?.title?.text ?? (typeof snapshot?.title === 'string' ? snapshot.title : null),
-        createdAt: Number.isFinite(head?.createdAt) ? new Date(head.createdAt).toISOString() : null,
-        parent: head?.parentSession ?? null,
-      }
-    } catch {
-      // Unknown to DSH (another harness wrote it, or it was removed): the board name stays.
-    }
-    return value
-  }
-
-  async function final(id, now) {
-    if (now === 'running') return null
+  /**
+   * One observation of a session: DSH hands over the session's own header and events without
+   * copying or replaying them (`readSession` copies and replays the whole log, `readTitleSnapshot`
+   * lists every stored session), and reuses a stored session's read until its log changes.
+   */
+  async function observe(id, use) {
     let observation
     try {
-      // An observation hands over the session's own events without copying or replaying them
-      // (`readSession` does both), and DSH reuses a stored session's read until its log changes.
       observation = await services().sessionQuery?.observeSession?.(id, { projectionMode: 'none' })
-      return finalOf(observation?.events)
+      return observation === undefined ? null : use(observation)
     } catch {
+      // Unknown to DSH (another harness wrote it, or it was removed): the board name stays.
       return null
     } finally {
       observation?.[Symbol.dispose]?.()
+    }
+  }
+
+  const readOf = (observation, now, withFinal) => {
+    const head = observation.header
+    return {
+      title: titleOf(observation.events),
+      createdAt: Number.isFinite(head?.createdAt) ? new Date(head.createdAt).toISOString() : null,
+      parent: head?.parentSession ?? null,
+      final: withFinal && now !== 'running' ? finalOf(observation.events) : null,
     }
   }
 
@@ -89,8 +91,8 @@ export function createSessions(services) {
     return Promise.all(refs.map(async ref => {
       const id = resolve(ref, known) ?? String(ref)
       const now = state(id)
-      const head = await header(id)
-      return { ref: String(ref), id, title: head.title, state: now, createdAt: head.createdAt, parent: head.parent, final: withFinal ? await final(id, now) : null }
+      const read = (await observe(id, observation => readOf(observation, now, withFinal))) ?? { title: null, createdAt: null, parent: null, final: null }
+      return { ref: String(ref), id, ...read, state: now }
     }))
   }
 

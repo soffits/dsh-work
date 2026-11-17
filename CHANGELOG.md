@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.8
+
+Title, start time and last answer of a session now come from one DSH observation of it. The title read before listed every stored session for each worker, which was most of the time a chat took to open.
+
 ## 0.1.7
 
 A chat whose sessions already finished opens fast: the last answer is read from DSH's own observation of the session instead of a full copy and replay of its log.

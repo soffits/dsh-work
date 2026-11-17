@@ -69,22 +69,31 @@ test('a finished session\'s last answer and when its turn ended', () => {
   assert.equal(firstLine({ content: [] }), '')
 })
 
-test('a finished session\'s last answer comes from an observation, released after, without a full read', async () => {
+test('a session is read through one observation, released after, without a full read', async () => {
   const events = [
+    { type: 'session/title', seq: 0, time: 0, data: { title: 'Old' } },
     { type: 'assistant/message', time: 1, data: { message: { content: [{ type: 'text', text: 'Done.' }] } } },
     { type: 'turn/end', time: 2 },
+    { type: 'session/title', seq: 3, time: 3, data: { title: 'Player fix' } },
   ]
   let released = 0
   let options = null
   const sessionQuery = {
     readSession: () => { throw new Error('reads the whole log') },
-    readTitleSnapshot: async () => ({ title: { title: 'T' }, session: { createdAt: 0 } }),
-    observeSession: async (id, given) => { options = given; return { events, [Symbol.dispose]: () => { released += 1 } } },
+    readTitleSnapshot: () => { throw new Error('lists every stored session') },
+    observeSession: async (id, given) => { options = given; return { header: { createdAt: 5, parentSession: 'p' }, events, [Symbol.dispose]: () => { released += 1 } } },
   }
   const sessions = createSessions(() => ({ sessionQuery, agents: new Map() }))
   const [row] = await sessions.describe(['abc'], [], { finals: true })
+  assert.equal(row.title, 'Player fix')
+  assert.equal(row.createdAt, new Date(5).toISOString())
+  assert.equal(row.parent, 'p')
   assert.equal(row.final.text, 'Done.')
   assert.equal(row.final.time, new Date(2).toISOString())
   assert.deepEqual(options, { projectionMode: 'none' })
   assert.equal(released, 1)
+  const [plain] = await sessions.describe(['abc'])
+  assert.equal(plain.final, null)
+  const broken = createSessions(() => ({ sessionQuery: { observeSession: async () => { throw new Error('unknown') } }, agents: new Map() }))
+  assert.equal((await broken.describe(['x'], [], { finals: true }))[0].title, null)
 })
