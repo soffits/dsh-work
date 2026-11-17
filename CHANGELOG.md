@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+The assistant is counted once among a message's recipients when its main session is also the one working on the issue.
+
 ## 0.1.4
 
 On a phone the chat list keeps to the screen width (long titles end in an ellipsis), and a chat says it is loading while DSH reads its sessions.

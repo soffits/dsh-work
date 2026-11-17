@@ -194,7 +194,7 @@ export function createRoutes({ board, sessions, marks, people, identity, setting
     const counted = entry ? (await withCounts(viewer, [entry]))[0] : { read: 0 }
     const assigned = entry?.assignee ? described.find(row => sameSession(row.ref, entry.assignee)) ?? null : null
     const live = new Set(described.filter(row => row.state !== 'stored').map(row => row.ref))
-    const defaults = entry ? recipients({ text: '', entry, people: everyone, live: ref => live.has(ref), assistant: assistant.ref }) : { reach: assistant.ref ? [assistant.ref] : [] }
+    const defaults = entry ? recipients({ text: '', entry, people: everyone, live: ref => live.has(ref), assistant: assistantIn(snap).id ?? assistant.ref }) : { reach: assistant.ref ? [assistant.ref] : [] }
     const canPost = !closed && (viewer.level === 'all' || (entry !== null && visible(entry, viewer)))
     return json(200, {
       room: entry ? { ...roomOf(entry, { closed }), step: entry.step ?? null, for: entry.for ?? null, links: entry.links ?? [], general: isGeneral } : { id: 'general', kind: 'topic', title: general, general: true, count: 0 },
@@ -226,7 +226,7 @@ export function createRoutes({ board, sessions, marks, people, identity, setting
     }
     const known = snap.agents.map(row => row.session)
     const live = ref => sessions.live(ref, known)
-    const plan = recipients({ text, entry, people: everyone, live, assistant: assistant.ref })
+    const plan = recipients({ text, entry, people: everyone, live, assistant: assistantIn(snap).id ?? assistant.ref })
     const ref = entry.kind === 'topic' ? String(entry.id) : `#${entry.number}`
     try {
       await board.comment(ref, text, viewer.person, plan.extra.map(target => (sessions.resolve(target, known) ?? target)))
