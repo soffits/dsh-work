@@ -6,4 +6,4 @@
       name: '@soffits/dsh-work'
       config:
         command: [companion, board]
-    assistant: assistant
+        assistant: assistant
