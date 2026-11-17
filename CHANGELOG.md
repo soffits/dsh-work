@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+
+A closed issue says how it ended once, under the chat in up to three lines, instead of also filling the pinned facts on a phone; "nobody yet" shows only when no session is working on it.
+
 ## 0.1.1
 
 The bundle layer is valid YAML again, so the work row loads; a test parses it.

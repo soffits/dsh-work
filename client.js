@@ -96,7 +96,7 @@ button.wk-section{cursor:pointer;min-height:36px}
 .wk-jumps{position:absolute;right:20px;bottom:calc(var(--wk-dock,96px) + 12px);display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none}
 .wk-jumps>*{pointer-events:auto;box-shadow:0 4px 14px rgba(0,0,0,.14)}
 .wk-dock{flex:none;padding:8px clamp(12px,3vw,28px) 14px;border-top:.5px solid var(--dsw-alias-border-l2)}
-.wk-note{margin:0;font-size:13px;color:var(--dsw-alias-label-tertiary)}
+.wk-note{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:0;font-size:13px;color:var(--dsw-alias-label-tertiary)}
 .wk-empty{padding:48px 20px;text-align:center;color:var(--dsw-alias-label-tertiary)}
 .wk-error{margin:8px 16px;color:var(--dsw-alias-state-error-primary)}
 .wk-placeholder{display:grid;place-items:center;height:100%;color:var(--dsw-alias-label-tertiary)}
@@ -400,12 +400,15 @@ button.wk-section{cursor:pointer;min-height:36px}
             info.status && !info.general && h(Tag, { tone: TAG[info.status] ?? 'neutral' }, t(`status.${info.status}`))),
           !info.general && h('dl', { className: 'wk-facts' },
             h('dt', null, t('field.assignee')),
-            h('dd', null, room.assignee ? h(SessionChip, { person: room.assignee, t }) : h('span', { className: 'wk-n' }, t('nobody')),
-              room.sessions.filter(row => row.id !== room.assignee?.id && row.state !== 'stored').map(row => h(SessionChip, { key: row.id, person: row, t }))),
+            h('dd', null, (() => {
+              const others = room.sessions.filter(row => row.id !== room.assignee?.id && row.state !== 'stored')
+              if (!room.assignee && others.length === 0) return h('span', { className: 'wk-n' }, t('nobody'))
+              return [room.assignee && h(SessionChip, { key: 'assignee', person: room.assignee, t }), ...others.map(row => h(SessionChip, { key: row.id, person: row, t }))]
+            })()),
             info.next && h(Fragment, null, h('dt', null, t('field.next')), h('dd', null, h(kit.Icon, { name: 'calendar', size: 13 }), h(kit.RelativeDay, { date: info.next }))),
             info.step && h(Fragment, null, h('dt', null, t('field.step')),
               h('dd', null, h('button', { type: 'button', className: 'wk-step', 'data-open': stepOpen ? 'true' : undefined, 'aria-expanded': stepOpen, onClick: () => setStepOpen(value => !value) }, info.step))),
-            info.closed && h(Fragment, null, h('dt', null, t('status.closed')), h('dd', null, t('closedNote', { date: info.closed, outcome: info.outcome || '' }))))),
+          )),
         h('div', { className: 'wk-timeline', ref: scroller, onScroll, role: 'log', 'aria-live': 'polite' },
           rows.length === 0 && h('p', { className: 'wk-empty' }, t('empty.chat')),
           rows.map(row => {
