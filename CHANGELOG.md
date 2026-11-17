@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+
+On a phone the chat list keeps to the screen width (long titles end in an ellipsis), and a chat says it is loading while DSH reads its sessions.
+
 ## 0.1.3
 
 Session titles and last answers are read from DSH each time instead of kept for a while, so a chat never shows an old one.

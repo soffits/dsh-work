@@ -68,8 +68,8 @@ window.__ModuleLoader__.load({
 .wk-badge[data-alert]{background:var(--dsw-alias-state-error-primary)}
 .wk-more{align-self:flex-start}
 .wk-switch{margin-bottom:12px}
-.wk-chats{flex:1;min-height:0;display:grid;grid-template-columns:minmax(260px,340px) 1fr;border-top:.5px solid var(--dsw-alias-border-l2)}
-.wk-list{display:flex;flex-direction:column;min-height:0;border-right:.5px solid var(--dsw-alias-border-l2)}
+.wk-chats{flex:1;min-height:0;display:grid;grid-template-columns:minmax(260px,340px) minmax(0,1fr);border-top:.5px solid var(--dsw-alias-border-l2)}
+.wk-list{display:flex;flex-direction:column;min-width:0;min-height:0;border-right:.5px solid var(--dsw-alias-border-l2)}
 .wk-listTools{flex:none;display:flex;gap:8px;padding:10px 12px 6px}
 .wk-listRows{flex:1;min-height:0;overflow:auto;padding:0 6px 24px}
 .wk-section{display:flex;align-items:center;gap:6px;width:100%;padding:12px 10px 4px;border:0;background:none;color:var(--dsw-alias-label-tertiary);font:inherit;font-size:12px;line-height:18px;text-align:left}
@@ -108,7 +108,7 @@ button.wk-section{cursor:pointer;min-height:36px}
 @media (width<=760px){
 .wk-head{padding:16px 12px 8px}
 .wk-board{padding:0 12px 32px}
-.wk-chats{grid-template-columns:1fr}
+.wk-chats{grid-template-columns:minmax(0,1fr)}
 .wk-chats[data-open] .wk-list{display:none}
 .wk-chats:not([data-open]) .wk-room{display:none}
 .wk-list{border-right:0}
@@ -362,7 +362,7 @@ button.wk-section{cursor:pointer;min-height:36px}
       }
 
       if (error) return h('div', { className: 'wk-room' }, showBack && h(Button, { variant: 'ghost', size: 'sm', onClick: onBack }, h(IconChevronLeftOutlineRegular, { size: 16 }), t('back')), h('p', { className: 'wk-error', role: 'alert' }, t('error', { message: error })))
-      if (!room) return h('div', { className: 'wk-room' })
+      if (!room) return h('div', { className: 'wk-room' }, showBack && h('div', { className: 'wk-roomHead' }, h(Button, { variant: 'ghost', size: 'sm', 'aria-label': t('back'), onClick: onBack }, h(IconChevronLeftOutlineRegular, { size: 18 }))), h('p', { className: 'wk-empty', role: 'status' }, t('loading')))
 
       const me = [data.me.person, data.me.name].filter(Boolean)
       const info = room.room

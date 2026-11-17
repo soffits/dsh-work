@@ -56,6 +56,7 @@
     "state.idle": "waiting for a message",
     "state.stored": "finished",
     "you": "you",
-    "overdue": "overdue"
+    "overdue": "overdue",
+    "loading": "Loading…"
   }
 }
