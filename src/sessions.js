@@ -67,10 +67,16 @@ export function createSessions(services) {
 
   async function final(id, now) {
     if (now === 'running') return null
+    let observation
     try {
-      return finalOf((await services().sessionQuery?.readSession?.(id))?.events)
+      // An observation hands over the session's own events without copying or replaying them
+      // (`readSession` does both), and DSH reuses a stored session's read until its log changes.
+      observation = await services().sessionQuery?.observeSession?.(id, { projectionMode: 'none' })
+      return finalOf(observation?.events)
     } catch {
       return null
+    } finally {
+      observation?.[Symbol.dispose]?.()
     }
   }
 

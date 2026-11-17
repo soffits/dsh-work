@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7
+
+A chat whose sessions already finished opens fast: the last answer is read from DSH's own observation of the session instead of a full copy and replay of its log.
+
 ## 0.1.6
 
 The message box shows focus with its own border only, without a second ring inside it.

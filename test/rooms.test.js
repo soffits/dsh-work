@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { members, mentionsIn, recipients, roomOf, unreadOf, visible } from '../src/rooms.js'
-import { finalOf, firstLine } from '../src/sessions.js'
+import { createSessions, finalOf, firstLine } from '../src/sessions.js'
 
 const A = 'session-9a11fc8c-1111-2222-3333-444455556666'
 const B = 'bfa822d2-0000-1111-2222-333344445555'
@@ -67,4 +67,24 @@ test('a finished session\'s last answer and when its turn ended', () => {
   assert.deepEqual(finalOf(events), { time: new Date(2200).toISOString(), text: 'Done: 0.5.1 is out' })
   assert.equal(finalOf([]), null)
   assert.equal(firstLine({ content: [] }), '')
+})
+
+test('a finished session\'s last answer comes from an observation, released after, without a full read', async () => {
+  const events = [
+    { type: 'assistant/message', time: 1, data: { message: { content: [{ type: 'text', text: 'Done.' }] } } },
+    { type: 'turn/end', time: 2 },
+  ]
+  let released = 0
+  let options = null
+  const sessionQuery = {
+    readSession: () => { throw new Error('reads the whole log') },
+    readTitleSnapshot: async () => ({ title: { title: 'T' }, session: { createdAt: 0 } }),
+    observeSession: async (id, given) => { options = given; return { events, [Symbol.dispose]: () => { released += 1 } } },
+  }
+  const sessions = createSessions(() => ({ sessionQuery, agents: new Map() }))
+  const [row] = await sessions.describe(['abc'], [], { finals: true })
+  assert.equal(row.final.text, 'Done.')
+  assert.equal(row.final.time, new Date(2).toISOString())
+  assert.deepEqual(options, { projectionMode: 'none' })
+  assert.equal(released, 1)
 })
