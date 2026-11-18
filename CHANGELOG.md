@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+The page's words are read on each request and not kept by the browser, so an update that adds words shows them at once instead of raw keys like `live.title` until a restart.
+
 ## 0.2.1
 
 On a phone the Working now strip wraps its chips instead of stacking one per line, so many running sessions no longer push the columns off the screen.
