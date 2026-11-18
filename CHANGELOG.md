@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+On a phone the Working now strip wraps its chips instead of stacking one per line, so many running sessions no longer push the columns off the screen.
+
 ## 0.2.0
 
 The Board view starts with **Working now**: every session DSH has running, children included, with the issue it holds or "no issue" for a child that holds none. It follows DSH's session events, so it changes as soon as a session starts or stops, without polling. Only people who read every chat see it. Column counts stand out: Needs you turns amber when something waits.
