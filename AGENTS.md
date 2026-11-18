@@ -7,3 +7,4 @@ A DSH plugin: the work page (board columns and one chat per issue) over a board 
 - `client.js`: the page, in DSH's Client module format (no build step), made of DSH primitives and `ctx.uiKit`. `test/fixtures/` holds the export lists `test/client-names.test.js` checks against.
 
 Rules: the page never keeps a copy of the board, and nothing about a particular home or person goes in code, docs or tests. After UI changes, look at it at 390 and 1280 px, in light and dark, in two languages. `npm run check`, `npm test`. Conventional Commits, squash merges, semver from commit types.
+- Releases: after bumping the version and `CHANGELOG.md` and merging, pushing the tag `vX.Y.Z` runs `.github/workflows/publish.yml`, which publishes to npm by trusted publishing (OIDC, with provenance, no stored token; the package's trusted publisher on npmjs.com names this repo and `publish.yml`, so renaming either breaks it) and creates the GitHub release. Don't publish by hand.
