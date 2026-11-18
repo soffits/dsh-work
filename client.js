@@ -119,10 +119,7 @@ button.wk-section{cursor:pointer;min-height:36px}
 @media (width<=760px){
 .wk-head{padding:16px 12px 8px}
 .wk-board{padding:0 12px 32px}
-.wk-liveList{flex-direction:column}
-.wk-liveItem{width:100%;box-sizing:border-box}
-.wk-liveSession{flex:1;min-width:0}
-.wk-liveSession>span:last-child{max-width:none}
+.wk-liveSession>span:last-child{max-width:22ch}
 .wk-chats{grid-template-columns:minmax(0,1fr)}
 .wk-chats[data-open] .wk-list{display:none}
 .wk-chats:not([data-open]) .wk-room{display:none}
