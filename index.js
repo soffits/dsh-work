@@ -70,12 +70,13 @@ export function apply(ctx, config) {
   const sessions = createSessions(() => ({ sessionQuery: ctx.get('sessionQuery'), agents: ctx.get('agents') }))
   const people = createPeople({ people: config.people ?? {}, peopleFile: config.peopleFile ? absolute(config.peopleFile) : '', peopleKey: config.peopleKey ?? '' }, { warn })
   const changes = createChanges({ boardSignature: () => board.signature(), marksPath: marks.path })
-  const strings = readLocales(fileURLToPath(new URL('./locale/', import.meta.url))).then(tables)
+  const localeDir = fileURLToPath(new URL('./locale/', import.meta.url))
   const lower = map => Object.fromEntries(Object.entries(map ?? {}).map(([key, value]) => [personKey(key), value]))
   const routes = createRoutes({
     board, sessions, marks, people, changes,
     identity: () => ctx.get('requestIdentity'),
-    strings: () => strings,
+    // Read on each request, so an update that changes only words shows without a restart.
+    strings: () => readLocales(localeDir).then(tables),
     settings: {
       access: lower(config.access),
       owner: personKey(config.owner || 'owner'),

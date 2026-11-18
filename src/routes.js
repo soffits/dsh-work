@@ -287,7 +287,7 @@ export function createRoutes({ board, sessions, marks, people, identity, setting
     return new Response(stream, { status: 200, headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'private, no-cache, no-transform', 'x-accel-buffering': 'no', 'x-content-type-options': 'nosniff' } })
   })
 
-  const words = async () => json(200, { tables: await strings() }, { 'cache-control': 'private, max-age=300' })
+  const words = async () => json(200, { tables: await strings() }, { 'cache-control': 'private, no-cache' })
 
   const get = (path, fetch) => ({ path: `${PREFIX}${path}`, methods: ['GET'], requestBody: 'buffered', fetch })
   const postRoute = (path, fetch) => ({ path: `${PREFIX}${path}`, methods: ['POST'], requestBody: 'buffered', fetch })
