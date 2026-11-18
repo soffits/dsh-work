@@ -56,7 +56,11 @@
     "state.idle": "attend un message",
     "state.stored": "a terminé",
     "you": "vous",
+    "points": "+{n} pts",
     "overdue": "en retard",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "live.title": "En ce moment",
+    "live.empty": "Personne ne travaille en ce moment.",
+    "live.noIssue": "sans ticket"
   }
 }

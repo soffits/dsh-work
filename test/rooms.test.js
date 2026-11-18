@@ -27,6 +27,15 @@ test('a room: column from status, latest activity, last comment', () => {
   assert.equal(roomOf({ id: 'general', kind: 'topic', number: '3', title: 'general', comments: [] }).id, 'general')
 })
 
+test('a needs-owner room shows the points the board says it earns, only to a viewer allowed to see them', () => {
+  const asked = { ...issue, status: 'needs-owner', points: 3 }
+  assert.equal(roomOf(asked, { points: true }).points, 3)
+  assert.equal(roomOf(asked).points, null)
+  assert.equal(roomOf({ ...issue, points: 3 }, { points: true }).points, null)
+  assert.equal(roomOf({ ...asked, closed: '2026-11-16' }, { closed: true, points: true }).points, null)
+  assert.equal(roomOf({ ...asked, points: 0 }, { points: true }).points, null)
+})
+
 test('mentions follow the board rule', () => {
   assert.deepEqual(mentionsIn(issue.comments[2].text), ['ana', 'ben'])
 })

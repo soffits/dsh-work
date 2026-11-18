@@ -99,5 +99,8 @@ export function createSessions(services) {
   /** Whether DSH has this session loaded right now (running or idle in memory). */
   const live = (ref, known = []) => state(resolve(ref, known) ?? String(ref)) !== 'stored'
 
-  return { describe, live, resolve }
+  /** The ids of the sessions with a turn running right now, children included. */
+  const running = () => (services().agents?.list?.() ?? []).filter(agent => agent.status === 'running').map(agent => agent.id)
+
+  return { describe, live, resolve, running }
 }

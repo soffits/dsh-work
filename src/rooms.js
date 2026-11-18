@@ -3,7 +3,9 @@
  *
  * An entry is what `companion board list --json` prints for an issue or topic: number, title,
  * status, assignee (a session or its short id), labels, next date, step and the append-only
- * comment thread. A room is that entry as the page shows it, in a board column and as a chat.
+ * comment thread. A room is that entry as the page shows it, in a board column and as a chat. A needs-owner
+ * entry may carry `points`, what the owner earns by answering (the board sets it only for an owner who plays
+ * a points game), which a viewer who reads every room is shown.
  */
 
 /** Board columns, in order, and the statuses each takes. Closed entries go to `done` for a few days. */
@@ -54,7 +56,7 @@ export function sameSession(a, b) {
 }
 
 /** One room as the list and the board show it. `closed` entries carry `closed` (a day) and an outcome. */
-export function roomOf(entry, { closed = false } = {}) {
+export function roomOf(entry, { closed = false, points = false } = {}) {
   const comments = entry.comments ?? []
   const last = comments[comments.length - 1]
   const times = [entry.created, entry.updated, last?.time, closed ? entry.closed : undefined].map(boardTime).filter(Number.isFinite)
@@ -70,6 +72,7 @@ export function roomOf(entry, { closed = false } = {}) {
     assignee: entry.assignee ? String(entry.assignee) : null,
     next: entry.next ? String(entry.next) : null,
     overdue: Number(entry.overdue_days) > 0,
+    points: points && !closed && entry.status === 'needs-owner' && Number(entry.points) > 0 ? Number(entry.points) : null,
     closed: closed ? String(entry.closed ?? '') : null,
     outcome: closed ? String(entry.outcome ?? '') : null,
     count: comments.length,

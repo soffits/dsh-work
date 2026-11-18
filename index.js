@@ -86,6 +86,8 @@ export function apply(ctx, config) {
     },
   })
   for (const route of routes) ctx.connection.fetch.register(route)
+  // A session starting, stopping or ending its turn changes who is working now.
+  for (const event of ['agent/created', 'agent/status', 'agent/disposed']) ctx.on(event, () => changes.announce('live'))
   ctx.on('dispose', () => changes.stop())
   logger.info(`work board via ${command.join(' ')}${config.boardDir ? `, watching ${config.boardDir}` : ''} (${people.enabled ? 'per person' : 'single owner'})`)
 }

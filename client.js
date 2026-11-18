@@ -61,12 +61,22 @@ window.__ModuleLoader__.load({
 .wk-cardMeta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:12px;line-height:18px;color:var(--dsw-alias-label-tertiary)}
 .wk-cardMeta>span{display:inline-flex;align-items:center;gap:4px}
 .wk-cardMeta [data-tone=warn]{color:var(--dsw-alias-state-warn-primary)}
+.wk-cardMeta [data-tone=ok]{color:var(--dsw-alias-state-success-primary)}
 .wk-cardLast{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;padding-top:6px;border-top:.5px solid var(--dsw-alias-border-l2);font-size:12px;line-height:18px;color:var(--dsw-alias-label-secondary)}
 .wk-cardLast b{font-weight:500;color:var(--dsw-alias-label-primary)}
 .wk-card[data-done] .wk-cardTitle{color:var(--dsw-alias-label-secondary)}
 .wk-badges{display:inline-flex;gap:4px;margin-left:auto}
 .wk-badge{min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:8px;background:var(--dsw-alias-state-business-primary);color:#fff;font-size:10px;font-weight:600;line-height:16px;text-align:center}
 .wk-badge[data-alert]{background:var(--dsw-alias-state-error-primary)}
+.wk-n[data-tone=warn]{font-weight:600;color:var(--dsw-alias-state-warn-primary)}
+.wk-live{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;padding:10px;border-radius:14px;background:var(--dsw-alias-bg-layer-1)}
+.wk-liveList{display:flex;flex-wrap:wrap;gap:6px 8px}
+.wk-liveItem{display:inline-flex;align-items:center;gap:2px;min-width:0;max-width:100%;min-height:28px;padding:0 4px 0 0;border:.5px solid var(--dsw-alias-border-l2);border-radius:14px;background:var(--dsw-alias-bg-base)}
+.wk-liveItem[data-orphan]{border-color:var(--dsw-alias-state-warn-primary)}
+.wk-liveSession,.wk-liveIssue{display:inline-flex;align-items:center;gap:6px;min-width:0;padding:0 6px 0 10px;border:0;border-radius:14px;background:none;color:inherit;font:inherit;font-size:12px;line-height:18px;cursor:pointer}
+.wk-liveSession>span:last-child{min-width:0;max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wk-liveIssue{flex:none;padding:0 8px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums}
+@media (hover:hover){.wk-liveSession:hover,.wk-liveIssue:hover{background:var(--dsw-alias-interactive-bg-hover)}}
 .wk-more{align-self:flex-start}
 .wk-switch{margin-bottom:12px}
 .wk-chats{flex:1;min-height:0;display:grid;grid-template-columns:minmax(260px,340px) minmax(0,1fr);border-top:.5px solid var(--dsw-alias-border-l2)}
@@ -104,11 +114,15 @@ button.wk-section{cursor:pointer;min-height:36px}
 .wk-sideIcon{position:relative;display:inline-flex}
 .wk-sideBadge{position:absolute;top:-5px;right:-8px;min-width:14px;height:14px;padding:0 3px;box-sizing:border-box;border-radius:7px;background:var(--dsw-alias-state-error-primary);color:#fff;font-size:9px;font-weight:600;line-height:14px;text-align:center;pointer-events:none}
 /* Chrome is not selectable; titles, steps and message text are. */
-.wk-columnHead,.wk-cardTop,.wk-cardMeta,.wk-n,.wk-section,.wk-facts dt,.wk-chip,.wk-tabCount,.wk-badge,.wk-sideIcon,.wk-who,.wk-jumps,.wk-listTools,.wk-roomNumber{-webkit-user-select:none;user-select:none}
+.wk-columnHead,.wk-liveItem,.wk-cardTop,.wk-cardMeta,.wk-n,.wk-section,.wk-facts dt,.wk-chip,.wk-tabCount,.wk-badge,.wk-sideIcon,.wk-who,.wk-jumps,.wk-listTools,.wk-roomNumber{-webkit-user-select:none;user-select:none}
 .wk-card img,.wk-page svg{-webkit-user-drag:none}
 @media (width<=760px){
 .wk-head{padding:16px 12px 8px}
 .wk-board{padding:0 12px 32px}
+.wk-liveList{flex-direction:column}
+.wk-liveItem{width:100%;box-sizing:border-box}
+.wk-liveSession{flex:1;min-width:0}
+.wk-liveSession>span:last-child{max-width:none}
 .wk-chats{grid-template-columns:minmax(0,1fr)}
 .wk-chats[data-open] .wk-list{display:none}
 .wk-chats:not([data-open]) .wk-room{display:none}
@@ -116,13 +130,13 @@ button.wk-section{cursor:pointer;min-height:36px}
 .wk-roomHead{padding:10px 12px}
 .wk-jumps{right:12px}
 }
-@media (width<=760px),(pointer:coarse){.wk-page button:not(.wk-card):not(.uk-convo):not(.wk-step):not(.wk-who),.wk-chip{min-height:40px}.wk-who{min-height:28px}.wk-chip{padding:0 12px}}
+@media (width<=760px),(pointer:coarse){.wk-page button:not(.wk-card):not(.uk-convo):not(.wk-step):not(.wk-who),.wk-chip{min-height:40px}.wk-liveItem{min-height:40px}.wk-liveSession,.wk-liveIssue{min-height:38px}.wk-who{min-height:28px}.wk-chip{padding:0 12px}}
 @media (prefers-reduced-motion:reduce){.wk-card,.wk-chip,.wk-column{transition:none}.wk-card:active,.wk-chip:active{transform:none}}
 `
 
     // ---- shared state ----
 
-    const shared = { kit: null, workspace: null, mentions: 0, linked: null, version: 0 }
+    const shared = { kit: null, workspace: null, mentions: 0, linked: null, version: 0, liveVersion: 0 }
     const listeners = new Set()
     const emit = () => { for (const listener of listeners) listener() }
     const subscribe = listener => { listeners.add(listener); return () => listeners.delete(listener) }
@@ -146,7 +160,12 @@ button.wk-section{cursor:pointer;min-height:36px}
         // Signed out or DSH restarting: the next tick tries again.
       }
     }
-    const changed = () => { shared.version += 1; emit(); refreshBadge() }
+    // A notice that only says who is running leaves the board's own reads alone.
+    const changed = notice => {
+      shared.liveVersion += 1
+      if (notice?.what !== 'live') { shared.version += 1; refreshBadge() }
+      emit()
+    }
 
     /** Whether the page is phone-narrow: one pane at a time, one column at a time. */
     function useNarrow() {
@@ -191,7 +210,8 @@ button.wk-section{cursor:pointer;min-height:36px}
         h('span', { className: 'wk-cardTitle' }, room.title),
         room.column !== 'done' && h('span', { className: 'wk-cardMeta' },
           room.next && h('span', { 'data-tone': today || room.overdue ? 'warn' : undefined }, h(kit.Icon, { name: today || room.overdue ? 'calendar-clock' : 'calendar', size: 13 }), h(kit.RelativeDay, { date: room.next })),
-          room.count > 0 && h('span', { 'aria-label': t('comments', { n: room.count }) }, h(kit.Icon, { name: 'message-square', size: 13 }), room.count)),
+          room.count > 0 && h('span', { 'aria-label': t('comments', { n: room.count }) }, h(kit.Icon, { name: 'message-square', size: 13 }), room.count),
+          room.points && h('span', { 'data-tone': 'ok' }, h(kit.Icon, { name: 'sparkles', size: 13 }), t('points', { n: room.points }))),
         room.column !== 'done' && room.last && h('span', { className: 'wk-cardLast' }, h('b', null, room.last.who.label), ' ', room.last.text))
     }
 
@@ -199,10 +219,40 @@ button.wk-section{cursor:pointer;min-height:36px}
       const [all, setAll] = useState(false)
       const shown = all ? rooms : rooms.slice(0, SHOWN[id])
       return h('section', { className: 'wk-column', id: `wk-col-${id}`, 'data-flash': flash ? 'true' : undefined, 'aria-label': t(`column.${id}`, { n: doneDays }) },
-        h('div', { className: 'wk-columnHead' }, h('span', { className: 'wk-dot', style: { background: kit.toneColor(TONE[id]) } }), t(`column.${id}`, { n: doneDays }), h('span', { className: 'wk-n' }, rooms.length)),
+        h('div', { className: 'wk-columnHead' }, h('span', { className: 'wk-dot', style: { background: kit.toneColor(TONE[id]) } }), t(`column.${id}`, { n: doneDays }), h('span', { className: 'wk-n', 'data-tone': id === 'needs-owner' && rooms.length > 0 ? 'warn' : undefined }, rooms.length)),
         shown.map(room => h(Card, { key: room.id, room, kit, t, worker: workers[room.assignee], onOpen })),
         rooms.length > shown.length && h(Button, { variant: 'ghost', size: 'sm', className: 'wk-more', onClick: () => setAll(true) }, t('more', { n: rooms.length - shown.length })),
         all && rooms.length > SHOWN[id] && h(Button, { variant: 'ghost', size: 'sm', className: 'wk-more', onClick: () => setAll(false) }, t('less')))
+    }
+
+    /** Who is working now: each running session or child with its issue, or "no issue" for a child that holds none. */
+    function LiveStrip({ kit, t, onOpen }) {
+      const version = useShared(s => s.liveVersion)
+      const [rows, setRows] = useState(null)
+      useEffect(() => {
+        let live = true
+        call('live').then(body => { if (live) setRows(body.sessions) }, () => { if (live) setRows(null) })
+        return () => { live = false }
+      }, [version])
+      if (rows === null) return null
+      return h('section', { className: 'wk-live', 'aria-label': t('live.title') },
+        h('div', { className: 'wk-columnHead' }, h('span', { className: 'wk-dot', style: { background: kit.toneColor('ok') } }), t('live.title'), h('span', { className: 'wk-n' }, rows.length)),
+        rows.length === 0
+          ? h('p', { className: 'wk-note' }, t('live.empty'))
+          : h('div', { className: 'wk-liveList', role: 'list' }, rows.map(row => {
+            const first = row.issues[0]
+            return h('div', { key: row.id, className: 'wk-liveItem', role: 'listitem', 'data-orphan': row.orphan ? 'true' : undefined },
+              h('button', {
+                type: 'button', className: 'wk-liveSession', title: t('openSession', { name: `${row.label} · ${row.title}` }),
+                onClick: () => openSession(row.id), disabled: !shared.workspace,
+              }, h(StateDot, { state: 'ongoing' }), h('span', null, row.title)),
+              first
+                ? h('button', {
+                  type: 'button', className: 'wk-liveIssue', title: row.issues.map(issue => `#${issue.number} ${issue.title}`).join('\n'),
+                  onClick: () => onOpen(String(first.number)),
+                }, `#${first.number}`, row.issues.length > 1 && ` +${row.issues.length - 1}`)
+                : row.orphan && h(Tag, { tone: 'warning' }, t('live.noIssue')))
+          })))
     }
 
     function BoardView({ data, kit, t, onOpen, focusColumn }) {
@@ -228,6 +278,7 @@ button.wk-section{cursor:pointer;min-height:36px}
       if (data.rooms.length === 0 && data.done.length === 0) return h('p', { className: 'wk-empty' }, t('empty.board'))
       const columns = narrow ? [column] : data.columns
       return h('div', { className: 'wk-board' },
+        data.me.level === 'all' && h(LiveStrip, { kit, t, onOpen }),
         narrow && h('div', { className: 'wk-switch' }, h(SegmentedControl, {
           id: 'wk-columns', value: column, label: t('columns'), onChange: setColumn,
           options: data.columns.map(id => ({ value: id, label: `${t(`column.${id}`, { n: doneDays }).split(',')[0]} ${byColumn[id].length}` })),

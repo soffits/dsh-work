@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+The Board view starts with **Working now**: every session DSH has running, children included, with the issue it holds or "no issue" for a child that holds none. It follows DSH's session events, so it changes as soon as a session starts or stops, without polling. Only people who read every chat see it. Column counts stand out: Needs you turns amber when something waits.
+
+A needs-owner issue shows the points answering it earns, when the board reports them (`points` in `list --json`), to people who read every chat.
+
 ## 0.1.8
 
 Title, start time and last answer of a session now come from one DSH observation of it. The title read before listed every stored session for each worker, which was most of the time a chat took to open.
