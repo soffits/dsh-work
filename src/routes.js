@@ -4,6 +4,7 @@
  *
  *   GET  /api/work/overview            rooms for the board and the chat list, counts, who is asking
  *   GET  /api/work/archived            closed issues (their chats stay readable)
+ *   GET  /api/work/live                the sessions running now, each with its issues (or none)
  *   GET  /api/work/room?id=            one room: fields, comments with session milestones, the @ list
  *   POST /api/work/post                { id, text }: a comment as the signed-in person, delivered by the rule
  *   POST /api/work/read                { id, count }: read up to this many comments
@@ -12,6 +13,7 @@
  *   GET  /api/work/strings             the page's words by language tag
  */
 import { viewerOf } from './access.js'
+import { liveRows } from './live.js'
 import { COLUMNS, boardTime, members, mentions, mentionsIn, recipients, roomOf, sameSession, shortId, unreadOf, visible } from './rooms.js'
 
 export const PREFIX = '/api/work'
@@ -101,7 +103,7 @@ export function createRoutes({ board, sessions, marks, people, identity, setting
     }))
     const read = await marks.counts(viewer.person, current)
     return entries.map(entry => {
-      const room = roomOf(entry)
+      const room = roomOf(entry, { points: viewer.level === 'all' })
       return { entry, room, read: read[room.id] ?? 0, ...unreadOf(entry, read[room.id] ?? 0, viewer.person) }
     })
   }
@@ -135,6 +137,14 @@ export function createRoutes({ board, sessions, marks, people, identity, setting
       mentions: [...rooms, ...(generalRoom ? [generalRoom] : [])].reduce((n, room) => n + room.mentioned, 0),
       assistant: assistant.name || null,
     })
+  })
+
+  /** Who is working now. Every session is named, so only a viewer who reads every room sees it. */
+  const live = handle(async (_request, viewer) => {
+    if (viewer.level !== 'all') return json(200, { sessions: [] })
+    const { snap, open } = await seen(viewer)
+    const described = await sessions.describe(sessions.running(), snap.agents.map(row => row.session))
+    return json(200, { sessions: liveRows({ sessions: described, open, who: ref => who(ref, snap) }) })
   })
 
   const archived = handle(async (_request, viewer) => {
@@ -283,6 +293,7 @@ export function createRoutes({ board, sessions, marks, people, identity, setting
   const postRoute = (path, fetch) => ({ path: `${PREFIX}${path}`, methods: ['POST'], requestBody: 'buffered', fetch })
   return [
     get('/overview', overview),
+    get('/live', live),
     get('/archived', archived),
     get('/room', room),
     postRoute('/post', post),

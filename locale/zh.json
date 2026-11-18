@@ -56,7 +56,11 @@
     "state.idle": "在等消息",
     "state.stored": "已结束",
     "you": "你",
+    "points": "+{n} 分",
     "overdue": "已逾期",
-    "loading": "正在加载…"
+    "loading": "正在加载…",
+    "live.title": "正在做",
+    "live.empty": "现在没有人在做事。",
+    "live.noIssue": "没有任务"
   }
 }
