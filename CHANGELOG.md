@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+Open event streams stop hearing notices when the plugin is unloaded or reloaded; before, they kept listening to the old copy.
+
 ## 0.2.2
 
 The page's words are read on each request and not kept by the browser, so an update that adds words shows them at once instead of raw keys like `live.title` until a restart.
