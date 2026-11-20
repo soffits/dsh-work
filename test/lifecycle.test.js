@@ -29,7 +29,7 @@ function fakeContext() {
 
 const nextChunk = async (reader, ms) => Promise.race([reader.read().then(({ value }) => new TextDecoder().decode(value)), sleep(ms).then(() => null)])
 
-test('an open events stream hears no more notices once the plugin unloads', async () => {
+test('an open events stream ends once the plugin unloads', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'work-life-'))
   const { ctx, routes, emit, unload } = fakeContext()
   const controller = new AbortController()
@@ -43,7 +43,8 @@ test('an open events stream hears no more notices once the plugin unloads', asyn
     assert.match(await nextChunk(reader, 1000), /"what":"live"/)
     unload()
     emit('agent/created')
-    assert.equal(await nextChunk(reader, 400), null)
+    const next = await Promise.race([reader.read(), sleep(1000).then(() => 'still open')])
+    assert.equal(next.done, true, 'the page reconnects to the next instance instead of hanging on this one')
   } finally {
     controller.abort()
     await rm(dir, { recursive: true, force: true })
