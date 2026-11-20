@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.4
+
+- An open work page's event stream now ends when the plugin is unloaded or updated, so the page reconnects to the new version; before, it stayed open and silent.
+- The person mapping, the words and the event stream come from the shared `@soffits/dsh-host-kit` instead of copies kept here. A broken language file is now skipped with a warning instead of failing the words for every language.
+
 ## 0.2.3
 
 Open event streams stop hearing notices when the plugin is unloaded or reloaded; before, they kept listening to the old copy.

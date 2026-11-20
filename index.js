@@ -11,10 +11,10 @@ import { homedir } from 'node:os'
 import { delimiter, isAbsolute, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import z from '@deepseek-ai/schemastery'
-import { LEVELS, createPeople, expandHome, personKey } from './src/access.js'
+import { createEventStreams, createPeople, expandHome, personKey, readLocales, tables } from '@soffits/dsh-host-kit'
+import { LEVELS } from './src/access.js'
 import { createBoard } from './src/board.js'
 import { createChanges } from './src/changes.js'
-import { readLocales, tables } from './src/locales.js'
 import { createMarks } from './src/marks.js'
 import { createRoutes } from './src/routes.js'
 import { createSessions } from './src/sessions.js'
@@ -70,13 +70,14 @@ export function apply(ctx, config) {
   const sessions = createSessions(() => ({ sessionQuery: ctx.get('sessionQuery'), agents: ctx.get('agents') }))
   const people = createPeople({ people: config.people ?? {}, peopleFile: config.peopleFile ? absolute(config.peopleFile) : '', peopleKey: config.peopleKey ?? '' }, { warn })
   const changes = createChanges({ boardSignature: () => board.signature(), marksPath: marks.path })
+  const streams = createEventStreams()
   const localeDir = fileURLToPath(new URL('./locale/', import.meta.url))
   const lower = map => Object.fromEntries(Object.entries(map ?? {}).map(([key, value]) => [personKey(key), value]))
   const routes = createRoutes({
-    board, sessions, marks, people, changes,
+    board, sessions, marks, people, changes, streams,
     identity: () => ctx.get('requestIdentity'),
     // Read on each request, so an update that changes only words shows without a restart.
-    strings: () => readLocales(localeDir).then(tables),
+    strings: () => readLocales(localeDir, { warn }).then(tables),
     settings: {
       access: lower(config.access),
       owner: personKey(config.owner || 'owner'),
@@ -89,6 +90,9 @@ export function apply(ctx, config) {
   for (const route of routes) ctx.connection.fetch.register(route)
   // A session starting, stopping or ending its turn changes who is working now.
   for (const event of ['agent/created', 'agent/status', 'agent/disposed']) ctx.on(event, () => changes.announce('live'))
-  ctx.effect(() => () => changes.stop())
+  ctx.effect(() => () => {
+    streams.close()
+    changes.stop()
+  })
   logger.info(`work board via ${command.join(' ')}${config.boardDir ? `, watching ${config.boardDir}` : ''} (${people.enabled ? 'per person' : 'single owner'})`)
 }

@@ -19,7 +19,6 @@ import { COLUMNS, boardTime, members, mentions, mentionsIn, recipients, roomOf, 
 export const PREFIX = '/api/work'
 const MAX_BODY = 32 * 1024
 const MAX_TEXT = 8000
-const HEARTBEAT_MS = 25 * 1000
 const ROOM_ID = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,119}$/
 const DAY_MS = 86400000
 const RECENT_AGENT_DAYS = 3
@@ -45,13 +44,14 @@ async function body(request) {
  * @param {ReturnType<import('./board.js').createBoard>} o.board
  * @param {ReturnType<import('./sessions.js').createSessions>} o.sessions
  * @param {ReturnType<import('./marks.js').createMarks>} o.marks
- * @param {ReturnType<import('./access.js').createPeople>} o.people
+ * @param {ReturnType<import('@soffits/dsh-host-kit').createPeople>} o.people
  * @param {() => any} o.identity - the requestIdentity service now, if any
  * @param {object} o.settings - { access, owner, names, assistant: { ref, name }, general, doneDays }
  * @param {ReturnType<import('./changes.js').createChanges>} o.changes
+ * @param {ReturnType<import('@soffits/dsh-host-kit').createEventStreams>} o.streams - the open event streams, ended when the plugin unloads
  * @param {() => Promise<object>} o.strings
  */
-export function createRoutes({ board, sessions, marks, people, identity, settings, changes, strings }) {
+export function createRoutes({ board, sessions, marks, people, identity, settings, changes, streams, strings }) {
   const { access, owner, names, assistant, general, doneDays } = settings
   const everyone = new Set([owner, ...Object.keys(access), ...Object.keys(names)].filter(Boolean).map(id => id.toLowerCase()))
   /** The assistant's main session: whoever holds its board name now (or a session id), so a successor takes over by claiming the name. */
@@ -261,31 +261,8 @@ export function createRoutes({ board, sessions, marks, people, identity, setting
     return json(200, { mentions: counted.reduce((n, row) => n + row.mentioned, 0), unread: counted.reduce((n, row) => n + row.unread, 0) })
   })
 
-  const events = handle(async (request, viewer) => {
-    const encoder = new TextEncoder()
-    let stop = () => {}
-    const stream = new ReadableStream({
-      start(controller) {
-        const write = chunk => {
-          try {
-            controller.enqueue(encoder.encode(chunk))
-          } catch {
-            stop()
-          }
-        }
-        write('retry: 5000\n: open\n\n')
-        const unlisten = changes.listen(viewer.person, what => write(`data: ${JSON.stringify({ type: 'change', what, at: new Date().toISOString() })}\n\n`))
-        const beat = setInterval(() => write(': beat\n\n'), HEARTBEAT_MS)
-        stop = () => { unlisten(); clearInterval(beat) }
-        request.signal?.addEventListener('abort', () => {
-          stop()
-          try { controller.close() } catch { /* already closed */ }
-        }, { once: true })
-      },
-      cancel() { stop() },
-    })
-    return new Response(stream, { status: 200, headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'private, no-cache, no-transform', 'x-accel-buffering': 'no', 'x-content-type-options': 'nosniff' } })
-  })
+  const events = handle(async (request, viewer) =>
+    streams.respond(request, ({ send }) => changes.listen(viewer.person, what => send({ type: 'change', what, at: new Date().toISOString() }))))
 
   const words = async () => json(200, { tables: await strings() }, { 'cache-control': 'private, no-cache' })
 

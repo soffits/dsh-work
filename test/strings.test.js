@@ -4,7 +4,7 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRoutes, PREFIX } from '../src/routes.js'
-import { readLocales, tables } from '../src/locales.js'
+import { readLocales, tables } from '@soffits/dsh-host-kit'
 
 test('the strings route serves the words on disk now, uncached', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'work-strings-'))
