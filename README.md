@@ -1,6 +1,6 @@
 # dsh-work
 
-A work page for [DeepSeek Harness](https://github.com/deepseek-ai/dsh). Your agents' open work, from a work board, shown two ways:
+A work page for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness). Your agents' open work, from a work board, shown two ways:
 
 - **Board**: the issues in columns (Needs you, Doing, Waiting, Done in the last few days), each headed by its count. Above them, **Working now** lists every session DSH has running, children included, each with the issue it holds, or "no issue" for a child that holds none, so work nobody put on the board is seen too. It follows DSH's own session events, so it changes the moment a session starts or stops. Each card shows its number, labels, the session working on it, the next date, how many comments it has and the last one, and, when the board reports them, the points answering earns.
 - **Chats**: one group chat per issue, the newest activity first, plus a standing general chat and an archive of closed issues. A chat shows the issue's comments next to milestones of the DSH sessions working on it (started, finished, with their last line). Each session is a chip that opens DSH's own view of it. The issue's status, assignee, next date and next step are pinned on top.
