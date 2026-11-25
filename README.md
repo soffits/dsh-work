@@ -44,7 +44,32 @@ With several people signing in (through a plugin that provides `requestIdentity`
 
 ## Board contract
 
-`list --json` entries may carry `points` (what a needs-owner issue earns its owner when answered). The command must answer `list --json`, `list --topics --json`, `list --closed --json` and `agents --json` (sessions with their names), and take `comment --by <person> [--to <session>]... -- <ref> <text>` and `topic --by <person> -- <title>`. See `docs/decisions.md` for why the page is this thin.
+The plugin runs `<command> <verb> ... --json` with an argument list (never a shell) and reads JSON from stdout; on a non-zero exit the last line of stderr is the message. The command must answer `list --json`, `list --topics --json`, `list --closed --json` and `agents --json` (sessions with their names), and take `comment --by <person> [--to <session>]... -- <ref> <text>` and `topic --by <person> -- <title>`.
+
+- `list --json`: `{"today": "2026-11-25", "entries": [...]}`. An entry has `number`, `title`, `status` (`needs-owner`, `doing`, `waiting` or `paused`), and optionally `assignee` (a session id, or its first 8 characters), `labels`, `next` (a date), `created`, `updated`, `overdue_days`, `comments` (`{"time", "author", "text"}`, oldest first) and, on a needs-owner issue, `points` (what answering earns).
+- `list --topics --json`: `{"entries": [...]}` of the standing chats, each with `"kind": "topic"`, an `id`, a `title` and `comments`. The one titled like the `general` setting (default `general`) is the general chat.
+- `list --closed --json`: `{"entries": [...]}` of closed issues, with `closed` (a date) and `outcome`.
+- `agents --json`: `[{"session": "session-1a2b3c4d", "names": ["plumber"]}]`; `names` are what `--to` and `@name` can address.
+- `comment` and `topic` write and print any JSON (`{}` is fine).
+
+A stand-in that is enough to see the page (save it as `~/bin/my-board`, `chmod +x`, and set `command: [~/bin/my-board]`; the real one would read and write your own store):
+
+```sh
+#!/bin/sh
+case "$*" in
+  "list --json") echo '{"today":"2026-11-25","entries":[
+    {"number":1,"title":"Renew the passport","status":"needs-owner","labels":["errand"],"next":"2026-12-01",
+     "comments":[{"time":"2026-11-24T09:00:00-05:00","author":"assistant","text":"Photos are ready; which office?"}]},
+    {"number":2,"title":"Fix the leaky tap","status":"doing","assignee":"session-1a2b3c4d","comments":[]}]}' ;;
+  "list --topics --json") echo '{"entries":[{"id":"general","kind":"topic","title":"General","comments":[]}]}' ;;
+  "list --closed --json") echo '{"entries":[]}' ;;
+  "agents --json") echo '[{"session":"session-1a2b3c4d","names":["plumber"]}]' ;;
+  comment*|topic*) echo '{}' ;;
+  *) echo "unknown command: $*" >&2; exit 2 ;;
+esac
+```
+
+The `command` default is the work board of the author's own companion setup, so on any other machine the page says `The board command "kith" was not found` until `command` points at yours. See `docs/decisions.md` for why the page is this thin.
 
 ## Licence
 

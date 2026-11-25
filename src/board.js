@@ -26,6 +26,15 @@ export function runCommand(argv, { cwd, env } = {}) {
   })
 }
 
+/** The error the page shows when the board command can't be run or answers something that isn't JSON. */
+export function unreadable(command, error) {
+  const name = command[0]
+  const why = error.code === 'ENOENT' ? `"${name}" was not found. Set \`command\` on the work row to your board command.`
+    : error instanceof SyntaxError ? `"${name}" printed something that is not JSON.`
+    : `"${name}" failed: ${error.message}`
+  return Object.assign(new Error(`The board command ${why}`), { status: 502 })
+}
+
 /** A cheap fingerprint of a folder's files: names, sizes and times, closed/ included. */
 export async function folderSignature(dir) {
   const parts = []
@@ -80,7 +89,7 @@ export function createBoard({ command, cwd, dir = '', env, run = runCommand }) {
       json(['list', '--topics']),
       json(['list', '--closed']),
       json(['agents']).catch(() => []),
-    ]).then(([open, topics, closed, agents]) => ({
+    ]).catch(error => { throw unreadable(command, error) }).then(([open, topics, closed, agents]) => ({
       today: open.today ?? null,
       open: open.entries ?? [],
       topics: topics.entries ?? [],
