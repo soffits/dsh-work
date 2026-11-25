@@ -44,11 +44,11 @@ async function body(request) {
  * @param {ReturnType<import('./board.js').createBoard>} o.board
  * @param {ReturnType<import('./sessions.js').createSessions>} o.sessions
  * @param {ReturnType<import('./marks.js').createMarks>} o.marks
- * @param {ReturnType<import('@soffits/dsh-host-kit').createPeople>} o.people
+ * @param {ReturnType<import('@soffits/dsh-plugin-sdk/host').createPeople>} o.people
  * @param {() => any} o.identity - the requestIdentity service now, if any
  * @param {object} o.settings - { access, owner, names, assistant: { ref, name }, general, doneDays }
  * @param {ReturnType<import('./changes.js').createChanges>} o.changes
- * @param {ReturnType<import('@soffits/dsh-host-kit').createEventStreams>} o.streams - the open event streams, ended when the plugin unloads
+ * @param {ReturnType<import('@soffits/dsh-plugin-sdk/host').createEventStreams>} o.streams - the open event streams, ended when the plugin unloads
  * @param {() => Promise<object>} o.strings
  */
 export function createRoutes({ board, sessions, marks, people, identity, settings, changes, streams, strings }) {

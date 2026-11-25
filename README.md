@@ -12,7 +12,7 @@ The page keeps no copy of the board. It reads and writes through a work board co
 ## Install
 
 ```sh
-dsh plugin --profile web add @soffits/dsh-work @soffits/dsh-ui-kit
+dsh plugin --profile web add @soffits/dsh-work @soffits/dsh-plugin-sdk
 ```
 
 Then point the `work` row at your board in your profile's `cordis.patch.yml`:
