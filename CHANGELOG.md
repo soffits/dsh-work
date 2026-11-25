@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.6
+
+- Depends on `@soffits/dsh-plugin-sdk` `^0.2.0` (it was `^0.1.0`, which a profile with the current SDK 0.2.0 could not share, so npm kept a second copy of 0.1.0 beside it). 0.2.0 only added an option to `buildClient`; nothing here changes.
+- A missing or failing board command is named on the page (`command not found`, not JSON, or the command's own error) instead of a bare "Something went wrong".
+
 ## 0.2.5
 
 - Shared parts now come from `@soffits/dsh-plugin-sdk`, which replaced `@soffits/dsh-host-kit`, `@soffits/dsh-ui-kit` and `@soffits/dsh-ui-actions`; the page loads after it. Install `@soffits/dsh-plugin-sdk` in the profile alongside this plugin.
