@@ -1,7 +1,7 @@
 /**
  * Board entries as rooms: pure functions, no I/O.
  *
- * An entry is what `companion board list --json` prints for an issue or topic: number, title,
+ * An entry is what `kith board list --json` prints for an issue or topic: number, title,
  * status, assignee (a session or its short id), labels, next date, step and the append-only
  * comment thread. A room is that entry as the page shows it, in a board column and as a chat. A needs-owner
  * entry may carry `points`, what the owner earns by answering (the board sets it only for an owner who plays

@@ -1,5 +1,5 @@
 /**
- * The work board, through its command line (`companion board` or anything that answers the same
+ * The work board, through its command line (`kith board` or anything that answers the same
  * JSON): this plugin keeps no copy of it. Reads are cached until the board folder changes (a stat
  * of its files, cheap) or, without a folder to watch, for a few seconds. Commands run with
  * execFile and an argument list, never a shell, so text from the page is only ever data.
@@ -51,7 +51,7 @@ export async function folderSignature(dir) {
 
 /**
  * @param {object} options
- * @param {string[]} options.command - the board command as an argument list, e.g. ['companion', 'board']
+ * @param {string[]} options.command - the board command as an argument list, e.g. ['kith', 'board']
  * @param {string} [options.cwd] - where to run it (a home it finds from there)
  * @param {string} [options.dir] - the board folder, to notice changes; empty: re-read every few seconds
  * @param {Record<string, string>} [options.env]

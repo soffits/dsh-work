@@ -20,7 +20,7 @@ Then point the `work` row at your board in your profile's `cordis.patch.yml`:
 ```yaml
 - id: work
   config:
-    command: [companion, board]
+    command: [kith, board]
     cwd: ~/my-home
     boardDir: ~/my-home/notes/board
     assistant: assistant          # the board name the assistant's main session claims

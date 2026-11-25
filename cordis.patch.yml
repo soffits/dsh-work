@@ -5,5 +5,5 @@
     - id: work
       name: '@soffits/dsh-work'
       config:
-        command: [companion, board]
+        command: [kith, board]
         assistant: assistant

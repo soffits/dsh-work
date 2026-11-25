@@ -1,8 +1,7 @@
 /**
  * DeepSeek Harness Host plugin: the work page.
  *
- * A thin page over a work board kept by a command line (`companion board` from the companion
- * practice, or anything that answers the same JSON): the issues as board columns, and each issue
+ * A thin page over a work board kept by a command line (`kith board` from Kith, or anything that answers the same JSON): the issues as board columns, and each issue
  * as a group chat of its comments, with milestones of the DSH sessions working on it. A message
  * posted here is a board comment written as the signed-in person; the board delivers it into
  * the sessions it is for through DSH's own steering. The plugin keeps nothing but read marks.
@@ -23,8 +22,8 @@ export const name = 'dsh-work'
 export const inject = ['connection']
 
 export const Config = z.object({
-  command: z.array(z.string()).default(['companion', 'board'])
-    .description('The board command, as an argument list. It must answer list/agents with --json and take comment and topic (the companion practice\'s `companion board`). A leading ~/ means the home folder.'),
+  command: z.array(z.string()).default(['kith', 'board'])
+    .description('The board command, as an argument list. It must answer list/agents with --json and take comment and topic (Kith\'s `kith board`). A leading ~/ means the home folder.'),
   cwd: z.string().default('')
     .description('Where the command runs, so it finds its home. Empty: DSH\'s working folder.'),
   boardDir: z.string().default('')
@@ -44,7 +43,7 @@ export const Config = z.object({
   names: z.dict(z.string()).default({})
     .description('Person id → the name shown for them. Also the people a message can mention.'),
   assistant: z.string().default('')
-    .description('The assistant\'s main session, as the board name it claims (`companion board whoami --name <name>`) or a session id. It gets every message a person posts here; a later main session takes over by claiming the name.'),
+    .description('The assistant\'s main session, as the board name it claims (`kith board whoami --name <name>`) or a session id. It gets every message a person posts here; a later main session takes over by claiming the name.'),
   assistantName: z.string().default('')
     .description('The name the assistant shows as, in comments and the @ list.'),
   general: z.string().default('general')
@@ -62,7 +61,7 @@ export function apply(ctx, config) {
     return isAbsolute(expanded) ? expanded : resolve(expanded)
   }
   const warn = message => logger.warn(message)
-  const command = (config.command?.length ? config.command : ['companion', 'board']).map((part, i) => (i === 0 && part.startsWith('~/') ? absolute(part) : part))
+  const command = (config.command?.length ? config.command : ['kith', 'board']).map((part, i) => (i === 0 && part.startsWith('~/') ? absolute(part) : part))
   // A command named without a path is looked up on PATH, with the home's own bin folder added.
   const env = { ...process.env, PATH: [process.env.PATH, join(home, '.local', 'bin')].filter(Boolean).join(delimiter) }
   const board = createBoard({ command, cwd: config.cwd ? absolute(config.cwd) : '', dir: config.boardDir ? absolute(config.boardDir) : '', env })
