@@ -6,7 +6,7 @@
  * turn, and `announce('live')` passes that on at once. Notices within `mergeMs` are one.
  */
 import { stat } from 'node:fs/promises'
-import { createNotices } from '@soffits/dsh-host-kit'
+import { createNotices } from '@soffits/dsh-plugin-sdk/host'
 
 /**
  * @param {object} o
